@@ -8,7 +8,7 @@ This has been built for personal use, but can be applicable as long as your play
 Usage:
 ```c#
 var playlist = await Playlist.LoadFromUrlAsync(Url);
-var guide = Guide.LoadFromUrlAsync(GuideUrl);
+var guide = await Guide.LoadFromUrlAsync(GuideUrl);
 ```
 Install:
 ```
