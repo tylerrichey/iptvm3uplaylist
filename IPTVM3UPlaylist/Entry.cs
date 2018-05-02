@@ -37,7 +37,7 @@ namespace IPTVM3UPlaylist
 			var entry = new Entry();
 			try
 			{
-                var match = Regex.Match(rawString, pattern);
+                var match = Regex.Match(rawString, pattern, RegexOptions.IgnoreCase);
 				entry.Duration = match.Groups[1].ToString();
 				entry.TvgId = match.Groups[2].ToString();
 				entry.TvgName = match.Groups[3].ToString();
