@@ -45,14 +45,7 @@ namespace IPTVM3UPlaylist
 				entry.GroupTitle = match.Groups[5].ToString();
 				entry.Title = match.Groups[6].ToString();
 				entry.Path = path;
-				entry.PathUri = new Uri(path);
 
-				return entry;
-			}
-#pragma warning disable CS0168 // Variable is declared but never used
-            catch (UriFormatException e)
-            {
-				//ignore Uri issues on object create
 				return entry;
 			}
 			catch (Exception e)

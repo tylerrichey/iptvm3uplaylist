@@ -13,7 +13,8 @@ namespace IPTVM3UPlaylist
     [XmlRoot("tv")]
     public class Guide
     {
-        private static HttpClient httpClient = new HttpClient();
+        private static readonly HttpClient httpClient = new HttpClient();
+        private static readonly XmlSerializer serializer = new XmlSerializer(typeof(Guide));
 
         public static async Task<Guide> LoadFromUrlAsync(string url)
         {
@@ -29,13 +30,12 @@ namespace IPTVM3UPlaylist
 
         public static async Task<Guide> LoadFromStreamAsync(Stream stream)
         {
-            var serializer = new XmlSerializer(typeof(Guide));
             try
             {
                 var metric = Stopwatch.StartNew();
                 var guide = await Task.Run(() => serializer.Deserialize(stream) as Guide);
                 metric.Stop();
-                Console.WriteLine($"Guide parsed in {metric.ElapsedMilliseconds}ms - {guide.Channels.Count()} channels - {guide.Programmes.Count()} programmes.");
+                Console.WriteLine($"Guide parsed in {metric.ElapsedMilliseconds}ms - {guide.Channels.Count} channels - {guide.Programmes.Count} programmes.");
                 return guide;
             }
             catch (Exception e)
@@ -44,9 +44,20 @@ namespace IPTVM3UPlaylist
             }
         }
 
+        public Guide FilterByPlaylist(Playlist playlist)
+        {
+            var favs = playlist.Entries.Select(p => p.TvgId);
+            return new Guide
+            {
+                Generatorinfoname = Generatorinfoname,
+                Generatorinfourl = Generatorinfourl,
+                Programmes = Programmes.Where(p => favs.Contains(p.Channel)).ToList(),
+                Channels = Channels.Where(c => favs.Contains(c.Id)).ToList()
+            };
+        }
+
         public async Task<Stream> SaveToStreamAsync()
         {
-			var serializer = new XmlSerializer(typeof(Guide));
             var stream = new MemoryStream();
 			try
 			{
