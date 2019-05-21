@@ -15,6 +15,7 @@ namespace IPTVM3UPlaylist
         private static HttpClient httpClient = new HttpClient();
         public List<Entry> Entries { get; set; }
         public List<string> ChannelList => Entries.Select(p => p.Title).OrderBy(p => p).ToList();
+        public string Name { get; set; }
 
         public Playlist(List<Entry> entries)
         {
@@ -24,7 +25,8 @@ namespace IPTVM3UPlaylist
         public static async Task<Playlist> LoadFromFileAsync(string file)
         {
             return await LoadFromStreamAsync(
-                new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous));
+                new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous),
+                Path.GetFileName(file));
         }
 
         public static async Task<Playlist> LoadFromUrlAsync(string url)
@@ -32,7 +34,7 @@ namespace IPTVM3UPlaylist
             try
             {
                 var stream = await httpClient.GetStreamAsync(url).ConfigureAwait(false);
-                return await LoadFromStreamAsync(stream);
+                return await LoadFromStreamAsync(stream, new Uri(url).Host);
             }
             catch (Exception e)
             {
@@ -40,7 +42,7 @@ namespace IPTVM3UPlaylist
             }
         }
 
-        public static async Task<Playlist> LoadFromStreamAsync(Stream stream)
+        public static async Task<Playlist> LoadFromStreamAsync(Stream stream, string name = "")
         {
             var metric = new Stopwatch();
             metric.Start();
@@ -59,7 +61,17 @@ namespace IPTVM3UPlaylist
             }
             var playlist = new Playlist(entries.ToList());
             metric.Stop();
-            Console.WriteLine($"Playlist parsed in {metric.ElapsedMilliseconds}ms - {playlist.Entries.Count()} items.");
+            playlist.Name = name;
+            MetricLog.Push(new MetricLog
+            {
+                Source = typeof(Playlist),
+                Name = name,
+                ElapsedMs = metric.ElapsedMilliseconds,
+                Metadata = new Dictionary<string, string>
+                {
+                    { "Items", playlist.Entries.Count.ToString() }
+                }
+            });
             return playlist;
         }
 

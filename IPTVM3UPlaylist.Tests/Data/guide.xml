@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<tv xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <channel id="Test Channel 1">
+    <display-name>Test Channel 1</display-name>
+    <icon src="http://logos.com/testchannel1" />
+  </channel>
+  <channel id="Test Channel 2">
+    <display-name>Test Channel 2</display-name>
+    <icon src="http://logos.com/testchannel2" />
+  </channel>
+  <programme start="20190521070000 -0500" stop="20190521073000 -0500" channel="Test Channel 1">
+    <title>Test Channel 1 Prog 1</title>
+    <desc>Test Channel 1 Prog 1</desc>
+  </programme>
+  <programme start="20190521073000 -0500" stop="20190521080000 -0500" channel="Test Channel 1">
+    <title>Test Channel 1 Prog 2</title>
+    <desc>Test Channel 1 Prog 2 desc</desc>
+  </programme>
+  <programme start="20190521080000 -0500" stop="20190521083000 -0500" channel="Test Channel 1">
+    <title>Test Channel 1 Prog 3</title>
+    <desc>Test Channel 1 Prog 3 desc</desc>
+  </programme>
+  <programme start="20190521083000 -0500" stop="20190521090000 -0500" channel="Test Channel 2">
+    <title>Test Channel 2 Prog 1</title>
+    <desc>Test Channel 2 Prog 1 desc</desc>
+  </programme>
+</tv>

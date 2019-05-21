@@ -1,0 +1,5 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="Test Channel 1" tvg-name="Test Channel 1 TVG" tvg-logo="http://logos.com/testchannel1" group-title="TV",Test Channel 1
+http://tv:8181/1234
+#EXTINF:-1 tvg-id="Test Channel 2" tvg-name="Test Channel 2 TVG" tvg-logo="http://logos.com/testchannel2" group-title="TV",Test Channel 2
+http://tv:8181/1235

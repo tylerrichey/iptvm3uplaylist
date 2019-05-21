@@ -15,27 +15,41 @@ namespace IPTVM3UPlaylist
     {
         private static readonly HttpClient httpClient = new HttpClient();
         private static readonly XmlSerializer serializer = new XmlSerializer(typeof(Guide));
+        
+        public string Name { get; set; }
 
         public static async Task<Guide> LoadFromUrlAsync(string url)
         {
             var stream = await httpClient.GetStreamAsync(url).ConfigureAwait(true);
-            return await LoadFromStreamAsync(stream);
+            return await LoadFromStreamAsync(stream, new Uri(url).Host);
         }
 
         public static async Task<Guide> LoadFromFileAsync(string file)
         {
 			return await LoadFromStreamAsync(
-				new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous));
+				new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous),
+                Path.GetFileName(file));
         }
 
-        public static async Task<Guide> LoadFromStreamAsync(Stream stream)
+        public static async Task<Guide> LoadFromStreamAsync(Stream stream, string name = "")
         {
             try
             {
                 var metric = Stopwatch.StartNew();
                 var guide = await Task.Run(() => serializer.Deserialize(stream) as Guide);
                 metric.Stop();
-                Console.WriteLine($"Guide parsed in {metric.ElapsedMilliseconds}ms - {guide.Channels.Count} channels - {guide.Programmes.Count} programmes.");
+                guide.Name = name;
+                MetricLog.Push(new MetricLog
+                {
+                    Source = typeof(Guide),
+                    Name = name,
+                    ElapsedMs = metric.ElapsedMilliseconds,
+                    Metadata = new Dictionary<string, string>
+                    {
+                        { "Channels", guide.Channels.Count.ToString() },
+                        { "Programmes", guide.Programmes.Count.ToString() }
+                    }
+                });
                 return guide;
             }
             catch (Exception e)
